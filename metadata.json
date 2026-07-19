@@ -1,0 +1,8 @@
+{
+  "name": "DriverMetrics Pro",
+  "description": "Ecossistema completo para motoristas, unindo gestão financeira avançada, calculadora de custos exata e sistema de reservas com roteirização e agenda.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

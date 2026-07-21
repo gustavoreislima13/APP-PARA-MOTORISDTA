@@ -48,9 +48,9 @@ export class MailService {
         <li><strong>Origem:</strong> ${rideDetails.origin}</li>
         ${stopsHtml}
         <li><strong>Destino:</strong> ${rideDetails.destination}</li>
-        <li><strong>Distância:</strong> ${rideDetails.distanceKm.toFixed(1)} km</li>
-        <li><strong>Tempo Estimado:</strong> ${rideDetails.timeMins.toFixed(0)} min</li>
-        <li><strong>Valor a Cobrar:</strong> R$ ${rideDetails.price.toFixed(2)}</li>
+        <li><strong>Distância:</strong> ${Number(rideDetails.distanceKm).toFixed(1)} km</li>
+        <li><strong>Tempo Estimado:</strong> ${Number(rideDetails.timeMins).toFixed(0)} min</li>
+        <li><strong>Valor a Cobrar:</strong> R$ ${Number(rideDetails.price).toFixed(2)}</li>
       </ul>
       <p>Acesse seu painel para mais detalhes e para entrar em contato com o passageiro.</p>
     `;

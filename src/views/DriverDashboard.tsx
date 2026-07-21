@@ -4,7 +4,6 @@ import { LayoutDashboard, TrendingUp, DollarSign, Activity, Route, MapPin, Calcu
 import { initAuth, googleSignIn, logout } from '../firebase';
 import { User as FirebaseUser } from 'firebase/auth';
 import { motion, AnimatePresence } from 'motion/react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function DriverDashboard() {
   const navigate = useNavigate();
@@ -325,6 +324,7 @@ export default function DriverDashboard() {
 
   // Chart data for past 7 days
   const last7DaysData = [];
+  let maxFaturamento = 0;
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
@@ -339,7 +339,8 @@ export default function DriverDashboard() {
         }
       }
     });
-    last7DaysData.push({ name: dateStr, faturamento: dayRev });
+    if (dayRev > maxFaturamento) maxFaturamento = dayRev;
+    last7DaysData.push({ name: dateStr.substring(0, 3), faturamento: dayRev });
   }
 
   return (
@@ -705,32 +706,25 @@ export default function DriverDashboard() {
                 {/* Chart */}
                 <div className="bg-[#111] border border-zinc-800 p-6 rounded-xl">
                   <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-widest mb-6">Faturamento (Últimos 7 dias)</h3>
-                  <div className="h-[250px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={last7DaysData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                        <XAxis 
-                          dataKey="name" 
-                          axisLine={false}
-                          tickLine={false}
-                          tick={{ fill: '#71717a', fontSize: 12 }}
-                          dy={10}
-                        />
-                        <YAxis hide />
-                        <Tooltip 
-                          cursor={{ fill: '#27272a' }}
-                          contentStyle={{ backgroundColor: '#18181b', border: '1px solid #27272a', borderRadius: '8px', color: '#fff', padding: '12px' }}
-                          itemStyle={{ color: '#10b981', fontWeight: 500 }}
-                          formatter={(value: number) => [formatCurrency(value), 'Faturamento']}
-                          labelStyle={{ display: 'none' }}
-                        />
-                        <Bar 
-                          dataKey="faturamento" 
-                          fill="#10b981" 
-                          radius={[4, 4, 4, 4]}
-                          barSize={32}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+                  <div className="h-[250px] w-full flex items-end justify-between gap-2 pt-6">
+                    {last7DaysData.map((day, i) => {
+                      const heightPercent = maxFaturamento > 0 ? (day.faturamento / maxFaturamento) * 100 : 0;
+                      return (
+                        <div key={i} className="flex flex-col items-center flex-1 group">
+                          <div className="w-full flex justify-center h-[200px] items-end pb-2 relative">
+                            {/* Tooltip on hover */}
+                            <div className="absolute -top-8 bg-zinc-800 text-white text-xs font-mono px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                              {formatCurrency(day.faturamento)}
+                            </div>
+                            <div 
+                              className="w-full max-w-[32px] bg-emerald-500 rounded-t-sm transition-all duration-500 hover:bg-emerald-400"
+                              style={{ height: `${Math.max(heightPercent, 2)}%` }}
+                            ></div>
+                          </div>
+                          <span className="text-xs text-zinc-500 uppercase">{day.name}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

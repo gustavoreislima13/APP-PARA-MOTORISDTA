@@ -7,6 +7,9 @@ export const sequelize = new Sequelize({
   dialect: 'sqlite',
   storage: './drivermetrics.sqlite', // Local SQLite database for preview
   logging: false,
+  dialectOptions: {
+    timeout: 10000, // 10 seconds busy timeout
+  }
 });
 
 /* 

@@ -1,0 +1,75 @@
+{
+  "entities": {
+    "Ride": {
+      "title": "Ride",
+      "description": "A ride booked by a passenger with a driver.",
+      "type": "object",
+      "properties": {
+        "driverId": {
+          "type": "string",
+          "description": "The custom URL/ID of the driver."
+        },
+        "passengerName": {
+          "type": "string",
+          "description": "The display name of the passenger."
+        },
+        "passengerEmail": {
+          "type": "string",
+          "description": "The email address of the passenger."
+        },
+        "passengerUid": {
+          "type": "string",
+          "description": "The Firebase Authentication UID of the passenger."
+        },
+        "origin": {
+          "type": "string",
+          "description": "Starting address."
+        },
+        "destination": {
+          "type": "string",
+          "description": "Ending address."
+        },
+        "scheduledDate": {
+          "type": "string",
+          "description": "The date of the scheduled ride."
+        },
+        "scheduledTime": {
+          "type": "string",
+          "description": "The time of the scheduled ride."
+        },
+        "distanceKm": {
+          "type": "number",
+          "description": "The ride distance in kilometers."
+        },
+        "timeMins": {
+          "type": "number",
+          "description": "The estimated ride duration in minutes."
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the ride."
+        },
+        "netProfit": {
+          "type": "number",
+          "description": "The estimated net profit for the driver."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["scheduled", "in_progress", "completed", "cancelled"],
+          "description": "The current booking status."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The timestamp when the ride was created."
+        }
+      },
+      "required": ["driverId", "passengerName", "passengerEmail", "passengerUid", "origin", "destination", "scheduledDate", "scheduledTime", "distanceKm", "timeMins", "price", "netProfit", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/rides/{rideId}": {
+      "schema": "Ride",
+      "description": "Collection of booked rides."
+    }
+  }
+}

@@ -9,6 +9,7 @@ export class User extends Model {
   declare email: string;
   declare phone: string;
   declare pix_key: string | null;
+  declare photo_url: string | null;
   declare custom_url: string | null; // For drivers to share their profile
   declare desired_hourly_rate: number | null;
   declare desired_profit_per_km: number | null;
@@ -48,6 +49,10 @@ User.init(
     pix_key: {
       type: DataTypes.STRING,
       allowNull: true, // Only applicable for drivers usually
+    },
+    photo_url: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     custom_url: {
       type: DataTypes.STRING,

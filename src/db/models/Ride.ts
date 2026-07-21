@@ -8,6 +8,7 @@ export class Ride extends Model {
   declare passenger_id: number | null;
   declare passenger_name: string | null;
   declare passenger_email: string | null;
+  declare passenger_phone: string | null;
   declare origin: string;
   declare destination: string;
   declare stops: object | null; // JSON array of stops
@@ -47,6 +48,10 @@ Ride.init(
       allowNull: true,
     },
     passenger_email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    passenger_phone: {
       type: DataTypes.STRING,
       allowNull: true,
     },

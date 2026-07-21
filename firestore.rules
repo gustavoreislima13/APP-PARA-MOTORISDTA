@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable global helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Helper functions for Ride
+    function isValidRide(data) {
+      return data.driverId is string && data.driverId.size() <= 128
+        && data.passengerName is string && data.passengerName.size() <= 256
+        && data.passengerEmail is string && data.passengerEmail.size() <= 256
+        && data.passengerUid is string && data.passengerUid.size() <= 128
+        && data.origin is string && data.origin.size() <= 512
+        && data.destination is string && data.destination.size() <= 512
+        && data.scheduledDate is string && data.scheduledDate.size() <= 32
+        && data.scheduledTime is string && data.scheduledTime.size() <= 32
+        && data.distanceKm is number
+        && data.timeMins is number
+        && data.price is number
+        && data.netProfit is number
+        && data.status in ['scheduled', 'in_progress', 'completed', 'cancelled']
+        && data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    match /rides/{rideId} {
+      allow create: if isSignedIn()
+        && request.auth.uid == request.resource.data.passengerUid
+        && isValidRide(request.resource.data);
+
+      allow read: if isSignedIn();
+
+      allow update: if isSignedIn()
+        && (
+          // Passenger can cancel/complete their own rides or rate them/add expenses
+          (resource.data.passengerUid == request.auth.uid && (
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'rating', 'expenses'])
+          ))
+        );
+
+      allow delete: if isSignedIn()
+        && resource.data.passengerUid == request.auth.uid;
+    }
+  }
+}

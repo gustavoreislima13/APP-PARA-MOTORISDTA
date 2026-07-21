@@ -2,17 +2,17 @@ import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../connection';
 import { User } from './User';
 
-export class FinancialRecord extends Model {
+export class DailyLog extends Model {
   declare id: number;
   declare driver_id: number;
-  declare type: 'revenue' | 'expense';
-  declare category: string;
-  declare amount: number;
-  declare description: string;
-  declare date: Date;
+  declare date: string;
+  declare earnings: number;
+  declare km: number;
+  declare hours_worked: number;
+  declare notes: string | null;
 }
 
-FinancialRecord.init(
+DailyLog.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -27,31 +27,33 @@ FinancialRecord.init(
         key: 'id',
       },
     },
-    type: {
-      type: DataTypes.ENUM('revenue', 'expense'),
+    date: {
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
-    category: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    amount: {
+    earnings: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      defaultValue: 0,
     },
-    description: {
+    km: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    hours_worked: {
+      type: DataTypes.DECIMAL(5, 2),
+      allowNull: false,
+      defaultValue: 0,
+    },
+    notes: {
       type: DataTypes.STRING,
       allowNull: true,
-    },
-    date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
     },
   },
   {
     sequelize,
-    tableName: 'financial_records',
+    tableName: 'daily_logs',
     timestamps: true,
   }
 );

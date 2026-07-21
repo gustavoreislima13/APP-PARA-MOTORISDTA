@@ -228,9 +228,15 @@ export default function DriverDashboard() {
 
   const fetchDashboardStats = (uid: string, email: string = '', name: string = '') => {
     fetch(`/api/dashboard/${uid}`)
-      .then(res => res.json())
+      .then(async res => {
+        const ct = res.headers.get('content-type');
+        if (ct && ct.includes('application/json')) {
+          return res.json();
+        }
+        return { error: 'Invalid response from server' };
+      })
       .then(data => {
-        if (data.error) {
+        if (!data || data.error) {
           // New driver, save profile initially
           saveProfile(uid, email || user?.email || '', name || user?.displayName || '');
         } else {
@@ -349,11 +355,16 @@ export default function DriverDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const data = await response.json();
-      if (data.error) {
-        alert(data.error);
+      const ct = response.headers.get('content-type');
+      if (ct && ct.includes('application/json')) {
+        const data = await response.json();
+        if (data.error) {
+          alert(data.error);
+        } else {
+          setSimPrice(data);
+        }
       } else {
-        setSimPrice(data);
+        alert('Erro de comunicação com o servidor ao simular a corrida.');
       }
     } catch (error) {
       console.error(error);
@@ -1144,6 +1155,7 @@ export default function DriverDashboard() {
                                       onClick={() => {
                                         fetch(`/api/rides/${ride.id}/accept`, { method: 'POST' })
                                           .then(() => fetchDashboardStats(user?.uid || ''))
+                                          .catch(err => console.error(err));
                                       }}
                                       className="flex items-center justify-center gap-2 bg-emerald-500 text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-400 transition-colors w-full"
                                     >
@@ -1153,6 +1165,7 @@ export default function DriverDashboard() {
                                       onClick={() => {
                                         fetch(`/api/rides/${ride.id}/cancel`, { method: 'POST' })
                                           .then(() => fetchDashboardStats(user?.uid || ''))
+                                          .catch(err => console.error(err));
                                       }}
                                       className="flex items-center justify-center gap-2 bg-zinc-800 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-700 hover:text-white transition-colors w-full"
                                     >
@@ -1166,6 +1179,7 @@ export default function DriverDashboard() {
                                       onClick={() => {
                                         fetch(`/api/rides/${ride.id}/complete`, { method: 'POST' })
                                           .then(() => fetchDashboardStats(user?.uid || ''))
+                                          .catch(err => console.error(err));
                                       }}
                                       className="flex items-center justify-center gap-2 bg-emerald-500 text-black px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-400 transition-colors w-full"
                                     >
@@ -1175,6 +1189,7 @@ export default function DriverDashboard() {
                                       onClick={() => {
                                         fetch(`/api/rides/${ride.id}/cancel`, { method: 'POST' })
                                           .then(() => fetchDashboardStats(user?.uid || ''))
+                                          .catch(err => console.error(err));
                                       }}
                                       className="flex items-center justify-center gap-2 bg-zinc-800 text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-zinc-700 hover:text-white transition-colors w-full"
                                     >

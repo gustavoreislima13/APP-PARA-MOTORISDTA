@@ -266,8 +266,12 @@ export default function PassengerApp() {
     if (driverId) {
       setLoadingDriverInfo(true);
       fetch(`/api/driver/by-url/${driverId}`)
-        .then(res => {
+        .then(async res => {
           if (!res.ok) throw new Error('Driver not found');
+          const ct = res.headers.get('content-type');
+          if (!ct || !ct.includes('application/json')) {
+            throw new Error('Invalid JSON response');
+          }
           return res.json();
         })
         .then(data => {
@@ -328,11 +332,16 @@ export default function PassengerApp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ origin, destination, stops: stops.filter(s => s.trim() !== ''), driverId })
       });
-      const data = await response.json();
-      if (data.error) {
-        alert(data.error);
+      const ct = response.headers.get('content-type');
+      if (ct && ct.includes('application/json')) {
+        const data = await response.json();
+        if (data.error) {
+          alert(data.error);
+        } else {
+          setSimulation(data);
+        }
       } else {
-        setSimulation(data);
+        alert('Erro ao comunicar com o servidor para simulação.');
       }
     } catch (error) {
       console.error(error);

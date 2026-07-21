@@ -1229,6 +1229,22 @@ Dê conselhos super práticos, amigáveis e objetivos em português brasileiro s
     }
   });
 
+  // Catch-all 404 handler for unmatched API routes to ensure JSON response instead of index.html
+  app.all('/api/*', (req, res) => {
+    res.status(404).json({ error: `Rota de API não encontrada: ${req.method} ${req.path}` });
+  });
+
+  // Global Express error handling middleware to ensure API errors return JSON
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('[Express API Error]', err);
+    if (res.headersSent) {
+      return next(err);
+    }
+    res.status(err.status || 500).json({ 
+      error: err.message || 'Erro interno do servidor' 
+    });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

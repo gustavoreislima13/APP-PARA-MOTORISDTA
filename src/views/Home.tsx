@@ -15,9 +15,15 @@ export default function Home() {
         setUser(u);
         // Fetch their driver profile to get their custom URL
         fetch(`/api/dashboard/${u.uid}`)
-          .then(res => res.json())
+          .then(async res => {
+            const ct = res.headers.get('content-type');
+            if (res.ok && ct && ct.includes('application/json')) {
+              return res.json();
+            }
+            return null;
+          })
           .then(data => {
-            if (data.driver?.custom_url) {
+            if (data?.driver?.custom_url) {
               setDriverUrl(data.driver.custom_url);
             }
           })
